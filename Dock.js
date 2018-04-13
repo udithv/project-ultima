@@ -66,5 +66,5 @@ const Dock1 = new Dock('hello','world');
 
 let fileList = ['User.js', 'Model.js','dock.js'];
 
-Dock1.cleanUpUserDir();
+
     
