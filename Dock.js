@@ -114,7 +114,15 @@ class Dock {
         return this.getFileMetadata(models)
                 .then(files => {
                     this.files = files;
+                    let fwparr = files.map(file => {
+                        return fse.writeFile(file.path, file.content);
+                    });
+
                     return this.createTmpModelsFolder()
+                                .then(res => {
+                                    return Promise.all(fwparr);
+                                });
+
                 });
     }
 
@@ -141,7 +149,8 @@ let models = [
     }
 ];
 
-Dock1.genModelFiles(models)
-      .then(x => console.log(x));
-
+/* Dock1.genModelFiles(models)
+      .then(() => console.log('success'));
+ */
     
+ Dock1.cleanUpUserDir();
