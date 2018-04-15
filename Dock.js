@@ -114,13 +114,14 @@ class Dock {
         return this.getFileMetadata(models)
                 .then(files => {
                     this.files = files;
-                    let fwparr = files.map(file => {
-                        return fse.writeFile(file.path, file.content);
-                    });
 
                     return this.createTmpModelsFolder()
                                 .then(res => {
-                                    return Promise.all(fwparr);
+                                    return Promise.all(
+                                        files.map(file => {
+                                            return fse.writeFile(file.path, file.content);
+                                        })
+                                    );
                                 });
 
                 });
@@ -129,10 +130,8 @@ class Dock {
     
 }
 
-
+/* 
 const Dock1 = new Dock('hello','world');
-
-let fileList = ['User.js', 'Model.js','dock.js'];
 
 let models = [
     {
@@ -147,10 +146,13 @@ let models = [
             return this.cname+'Schema';
         }
     }
-];
+]; */
 
 /* Dock1.genModelFiles(models)
-      .then(() => console.log('success'));
+      .then((arr) => console.log('success', arr));
  */
-    
- Dock1.cleanUpUserDir();
+
+ //Dock1.cleanUpUserDir();
+
+
+module.exports = Dock;
