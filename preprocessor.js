@@ -29,7 +29,13 @@ module.exports = (json) => {
                 classid,
                 fields: c.fields.map(f => {
                     let { id, value, parent } = f.attributes;
-                    return { id, value, parent };
+                    let field = value.replace(/[^\w:]/g, "").match(/((\w)*):((\w)*)/i);
+                    return {
+                        id,
+                        parent,
+                        fieldname: field[1],
+                        type: field[3]
+                    };
                 }),
                 idarr: arr.concat(c.fields.map(x => x.attributes.id))
             }
