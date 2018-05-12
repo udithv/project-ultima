@@ -1,0 +1,26 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const {{schemaname}} = new Schema({
+    {{#fields}}
+        {{name}}: {{type}}{{#iscomma}},{{/iscomma}}
+    {{/fields}}
+    {{#ones}}
+        {{singular}}: {
+            type: Schema.Types.ObjectId,
+            ref: '{{name}}'
+        }{{#iscomma}},{{/iscomma}}
+    {{/ones}}
+    {{#manys}}
+        {{plural}}: [{
+            type: Schema.Types.ObjectId,
+            ref: '{{name}}'
+        }]{{#iscomma}},{{/iscomma}}
+    {{/manys}}
+    
+});
+
+
+const {{cname}} = mongoose.model('{{cname}}', {{schemaname}});
+
+module.exports = {{cname}};
