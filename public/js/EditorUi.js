@@ -3453,56 +3453,87 @@ EditorUi.prototype.saveFile = function(forceDialog)
 /**
  * Download the models files as zip file
  */
-EditorUi.prototype.downloadModelFiles = function(){
+EditorUi.prototype.downloadModelFiles = function(forceDialog){
 	console.log('in download model files');
-	var name = this.editor.getOrCreateFilename();
 
-	if (name != null)
+	if (!forceDialog && this.editor.filename != null)
 	{
-		if (this.editor.graph.isEditing())
-		{
-			this.editor.graph.stopEditing();
-		}
-		
-		var xml = mxUtils.getXml(this.editor.getGraphXml());
-		
-
-		try
-		{
-			
-				console.log('not using localstorage');
-				if (xml.length < MAX_REQUEST_SIZE)
-				{
-					
-					axios.post(`/gendownload`,
-								xml,
-								{
-									headers: {'Content-Type': 'application/xml'},
-									responseType: 'blob'
-								})
-								.then(res => download(res.data, name.split('.')[0]+'.zip'))
-								.catch(err => console.log(err));
-				}
-				else
-				{
-					mxUtils.alert(mxResources.get('drawingTooLarge'));
-					mxUtils.popup(xml);
-					
-					return;
-				}
-			
-
-			//this.editor.setModified(false);
-			this.editor.setFilename(name);
-			this.updateDocumentTitle();
-		}
-		catch (e)
-		{
-			this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
-		}
+		this.download(this.editor.getOrCreateFilename());
 	}
+	else
+	{
+		var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), /*mxResources.get('save')*/ 'Download', mxUtils.bind(this, function(name)
+		{
+			this.download(name);
+		}), null, mxUtils.bind(this, function(name)
+		{
+			if (name != null && name.length > 0)
+			{
+				return true;
+			}
+			
+			mxUtils.confirm(mxResources.get('invalidName'));
+			
+			return false;
+		}));
+		this.showDialog(dlg.container, 300, 100, true, true);
+		dlg.init();
+	}
+	
 };
 
+/**
+ * Downloads the current graph under the given name
+ */
+
+EditorUi.prototype.download =  function(name) 
+{
+	if (name != null)
+		{
+			if (this.editor.graph.isEditing())
+			{
+				this.editor.graph.stopEditing();
+			}
+			
+			var xml = mxUtils.getXml(this.editor.getGraphXml());
+			
+
+			try
+			{
+				
+					console.log('not using localstorage');
+					if (xml.length < MAX_REQUEST_SIZE)
+					{
+						
+						axios.post(`/gendownload`,
+									xml,
+									{
+										headers: {'Content-Type': 'application/xml'},
+										responseType: 'blob'
+									})
+									.then(res => download(res.data, name.split('.')[0]+'.zip'))
+									.catch(err => console.log(err));
+					}
+					else
+					{
+						mxUtils.alert(mxResources.get('drawingTooLarge'));
+						mxUtils.popup(xml);
+						
+						return;
+					}
+				
+
+				//this.editor.setModified(false);
+				this.editor.setFilename(name);
+				this.updateDocumentTitle();
+			}
+			catch (e)
+			{
+				this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
+			}
+		}
+
+}
 /**
  * Saves the current graph under the given filename.
  */
