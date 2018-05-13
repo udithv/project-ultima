@@ -3450,6 +3450,58 @@ EditorUi.prototype.saveFile = function(forceDialog)
 		dlg.init();
 	}
 };
+/**
+ * Download the models files as zip file
+ */
+EditorUi.prototype.downloadModelFiles = function(){
+	console.log('in download model files');
+	var name = this.editor.getOrCreateFilename();
+
+	if (name != null)
+	{
+		if (this.editor.graph.isEditing())
+		{
+			this.editor.graph.stopEditing();
+		}
+		
+		var xml = mxUtils.getXml(this.editor.getGraphXml());
+		
+
+		try
+		{
+			
+				console.log('not using localstorage');
+				if (xml.length < MAX_REQUEST_SIZE)
+				{
+					
+					axios.post(`/gendownload`,
+								xml,
+								{
+									headers: {'Content-Type': 'application/xml'},
+									responseType: 'blob'
+								})
+								.then(res => download(res.data, name.split('.')[0]+'.zip'))
+								.catch(err => console.log(err));
+				}
+				else
+				{
+					mxUtils.alert(mxResources.get('drawingTooLarge'));
+					mxUtils.popup(xml);
+					
+					return;
+				}
+			
+
+			//this.editor.setModified(false);
+			this.editor.setFilename(name);
+			this.updateDocumentTitle();
+		}
+		catch (e)
+		{
+			this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
+		}
+	}
+};
 
 /**
  * Saves the current graph under the given filename.

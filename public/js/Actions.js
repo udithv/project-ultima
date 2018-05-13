@@ -64,6 +64,7 @@ Actions.prototype.init = function()
 		});
 	}).isEnabled = isGraphEnabled;
 	this.addAction('save', function() { ui.saveFile(false); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
+	this.addAction('downloadModelFiles', function() { ui.downloadModelFiles(); }, null, null, Editor.ctrlKey + '+D+M').isEnabled = isGraphEnabled;		
 	this.addAction('saveAs...', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S').isEnabled = isGraphEnabled;
 	this.addAction('export...', function() { ui.showDialog(new ExportDialog(ui).container, 300, 230, true, true); });
 	this.addAction('editDiagram...', function()
@@ -1276,7 +1277,7 @@ Actions.prototype.addAction = function(key, funct, enabled, iconCls, shortcut)
 	}
 	else
 	{
-		title = mxResources.get(key);
+		title = (key == 'downloadModelFiles') ? 'Download Model Files' : mxResources.get(key);
 	}
 	
 	return this.put(key, new Action(title, funct, enabled, iconCls, shortcut));

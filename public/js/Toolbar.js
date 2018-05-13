@@ -37,7 +37,7 @@ Toolbar.prototype.dropdownImageHtml = '<img border="0" style="position:absolute;
 /**
  * Defines the background for selected buttons.
  */
-Toolbar.prototype.selectedBackground = '#d0d0d0';
+Toolbar.prototype.selectedBackground = '#d1d1d1';
 
 /**
  * Defines the background for selected buttons.
@@ -135,22 +135,13 @@ Toolbar.prototype.init = function()
 		}
 	}
 	
+	var elts = this.addItems(['-', 'code']);
+	elts[1].setAttribute('title', 'Download Model Files ' + ' (' + this.editorUi.actions.get('downloadModelFiles').shortcut + ')');
+	
 	if (sw >= 400)
 	{
 		this.addSeparator();
 		
-		if (sw >= 440)
-		{
-			this.edgeShapeMenu = this.addMenuFunction('', mxResources.get('connection'), false, mxUtils.bind(this, function(menu)
-			{
-				this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], [null, null], 'geIcon geSprite geSprite-connection', null, true).setAttribute('title', mxResources.get('line'));
-				this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], ['link', null], 'geIcon geSprite geSprite-linkedge', null, true).setAttribute('title', mxResources.get('link'));
-				this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], ['flexArrow', null], 'geIcon geSprite geSprite-arrow', null, true).setAttribute('title', mxResources.get('arrow'));
-				this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], ['arrow', null], 'geIcon geSprite geSprite-simplearrow', null, true).setAttribute('title', mxResources.get('simpleArrow'));
-			}));
-	
-			this.addDropDownArrow(this.edgeShapeMenu, 'geSprite-connection', 44, 50, 0, 0, 22, -4);
-		}
 	
 		this.edgeStyleMenu = this.addMenuFunction('geSprite-orthogonal', mxResources.get('waypoints'), false, mxUtils.bind(this, function(menu)
 		{
@@ -167,10 +158,10 @@ Toolbar.prototype.init = function()
 		this.addDropDownArrow(this.edgeStyleMenu, 'geSprite-orthogonal', 44, 50, 0, 0, 22, -4);
 	}
 
-	this.addSeparator();
 
-	var insertMenu = this.addMenu('', mxResources.get('insert') + ' (' + mxResources.get('doubleClickTooltip') + ')', true, 'insert', null, true);
-	this.addDropDownArrow(insertMenu, 'geSprite-plus', 38, 48, -4, -3, 36, -8);
+	
+
+	
 };
 
 /**
@@ -722,7 +713,7 @@ Toolbar.prototype.addItems = function(keys, c, ignoreDisabled)
 		}
 		else
 		{
-			items.push(this.addItem('geSprite-' + key.toLowerCase(), key, c, ignoreDisabled));
+			items.push(this.addItem('geSprite-' + key.toLowerCase(), (key == 'code') ? 'downloadModelFiles' : key, c, ignoreDisabled));
 		}
 	}
 	

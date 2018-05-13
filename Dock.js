@@ -45,12 +45,12 @@ class Dock {
      * Deletes the user directory used for cleaning up afterwards.
      * 
      */
-    cleanUpUserDir(){
-       return fse.remove(this.udir)
+    cleanUpModelDir(){
+       return fse.remove(this.mdir)
                     .then(() => {
                         return {
                             success:true,
-                            userDir:this.udir
+                            modelDir:this.mdir
                         }
                     })
                     .catch(err => {
