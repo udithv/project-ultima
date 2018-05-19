@@ -5,8 +5,6 @@
     <title>Grapheditor</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<link rel="stylesheet" type="text/css" href="styles/common.css">
-	<link rel="stylesheet" type="text/css" href="styles/explorer.css">
 	<link rel="stylesheet" type="text/css" href="styles/grapheditor.css">
 	<script type="text/javascript">
 		// Parses URL parameters. Supported parameters are:
@@ -38,6 +36,7 @@
 		})(window.location.href);
 	
 		// Default resources are included in grapheditor resources
+		var mxBasePath = './';
 		mxLoadResources = false;
 	</script>
 	<script type="text/javascript" src="js/Init.js"></script>
@@ -74,7 +73,7 @@
 				
 				
 				// Updates action states which require a backend
-				if (!Editor.useLocalStorage)
+				/*if (!Editor.useLocalStorage)
 				{
 					mxUtils.post(OPEN_URL, '', mxUtils.bind(this, function(req)
 					{
@@ -85,7 +84,7 @@
 						//this.actions.get('saveAs').setEnabled(enabled);
 						this.actions.get('export').setEnabled(enabled);
 					}));
-				}
+				}*/
 			};
 			
 			// Adds required resources (disables loading of fallback properties, this can only
