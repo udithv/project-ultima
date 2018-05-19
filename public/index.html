@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Grapheditor</title>
+    <title>SchemaDock</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<link rel="stylesheet" type="text/css" href="styles/grapheditor.css">
@@ -72,19 +72,7 @@
 				editorUiInit.apply(this, arguments);
 				
 				
-				// Updates action states which require a backend
-				/*if (!Editor.useLocalStorage)
-				{
-					mxUtils.post(OPEN_URL, '', mxUtils.bind(this, function(req)
-					{
-						var enabled = req.getStatus() != 404;
-						this.actions.get('open').setEnabled(enabled || Graph.fileSupport);						
-						this.actions.get('import').setEnabled(enabled || Graph.fileSupport);
-						//this.actions.get('save').setEnabled(true);
-						//this.actions.get('saveAs').setEnabled(enabled);
-						this.actions.get('export').setEnabled(enabled);
-					}));
-				}*/
+			
 			};
 			
 			// Adds required resources (disables loading of fallback properties, this can only
