@@ -25,6 +25,76 @@ var OpenDialog = function()
 };
 
 /**
+ * Constructs a auth dialog
+ */
+
+var AuthDialog = function(editorUi, showRememberOption, fn)
+{
+	var div = document.createElement('div');
+	div.style.textAlign = 'center';
+	
+	var hd = document.createElement('p');
+	hd.style.fontSize = '16pt';
+	hd.style.padding = '0px';
+	hd.style.margin = '0px';
+	hd.style.color = 'gray';
+	
+	mxUtils.write(hd, 'Authorization Required');
+	
+	
+	
+	var img = document.createElement('img');
+	img.setAttribute('border', '0');
+	img.setAttribute('align', 'absmiddle');
+	img.style.marginRight = '10px';
+
+	
+	img.src = IMAGE_PATH + '/google-drive-logo-white.svg';
+	
+	var p = document.createElement('p');
+	mxUtils.write(p, 'Authorize SchemaDock in Google Drive');
+
+	var cb = document.createElement('input');
+	cb.setAttribute('type', 'checkbox');
+	
+	var button = mxUtils.button('Authorize', function()
+	{
+		fn(cb.checked);
+		
+	});
+
+	button.insertBefore(img, button.firstChild);
+	button.style.marginTop = '6px';
+	button.className = 'geBigButton';
+
+	div.appendChild(hd);
+	div.appendChild(p);
+	div.appendChild(button);
+	
+	if (showRememberOption)
+	{
+		var p2 = document.createElement('p');
+		p2.style.marginTop = '20px';
+		p2.appendChild(cb);
+		var span = document.createElement('span');
+		mxUtils.write(span, ' ' + mxResources.get('rememberMe'));
+		p2.appendChild(span);
+		div.appendChild(p2);
+		cb.checked = true;
+		cb.defaultChecked = true;
+		
+		mxEvent.addListener(span, 'click', function(evt)
+		{
+			cb.checked = !cb.checked;
+			mxEvent.consume(evt);
+		});
+	}
+	
+	this.container = div;
+};
+
+
+/**
  * Constructs a new color dialog.
  */
 var ColorDialog = function(editorUi, color, apply, cancelFn)

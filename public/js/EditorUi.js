@@ -3434,7 +3434,9 @@ EditorUi.prototype.saveFile = function(forceDialog)
 	{
 		var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), mxResources.get('save'), mxUtils.bind(this, function(name)
 		{
-			this.save(name);
+			//this.save(name);
+			this.authorizeDrive(name);
+
 		}), null, mxUtils.bind(this, function(name)
 		{
 			if (name != null && name.length > 0)
@@ -3448,6 +3450,82 @@ EditorUi.prototype.saveFile = function(forceDialog)
 		}));
 		this.showDialog(dlg.container, 300, 100, true, true);
 		dlg.init();
+	}
+};
+/**
+ * Save file to google Drive
+ */
+EditorUi.prototype.authorizeDrive = function(name)
+{
+	var dlg = new AuthDialog(this, false, mxUtils.bind(this, function(name){
+		console.log("Authorized link visit");
+		var options = 'location=0,top=100,left=300,status=0,width=800,height=400';
+		window.open('http://google.com','Google Authentication for SchemaDock', options);
+		this.hideDialog();
+	}));
+	this.showDialog(dlg.container, 250, 150, true, true);
+}
+/**
+ * Saves the current graph under the given filename.
+ */
+EditorUi.prototype.save = function(name)
+{
+	if (name != null)
+	{
+		if (this.editor.graph.isEditing())
+		{
+			this.editor.graph.stopEditing();
+		}
+		
+		var xml = mxUtils.getXml(this.editor.getGraphXml());
+		
+
+		try
+		{
+			if (Editor.useLocalStorage)
+			{
+				console.log('is using localstorage');
+				if (localStorage.getItem(name) != null &&
+					!mxUtils.confirm(mxResources.get('replaceIt', [name])))
+				{
+					return;
+				}
+
+				localStorage.setItem(name, xml);
+				this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('saved')) + ' ' + new Date());
+			}
+			else
+			{
+				console.log('not using localstorage');
+				if (xml.length < MAX_REQUEST_SIZE)
+				{
+					// new mxXmlRequest(SAVE_URL, '?filename=' + encodeURIComponent(name) +
+					// 	'&xml=' + encodeURIComponent(xml)).simulate(document, '_blank');
+					axios.post(`/save?filename=${name}`,
+								xml,
+								{
+									headers: {'Content-Type': 'application/xml'}
+								})
+								.then(res => console.log(res))
+								.catch(err => console.log(err));
+				}
+				else
+				{
+					mxUtils.alert(mxResources.get('drawingTooLarge'));
+					mxUtils.popup(xml);
+					
+					return;
+				}
+			}
+
+			this.editor.setModified(false);
+			this.editor.setFilename(name);
+			this.updateDocumentTitle();
+		}
+		catch (e)
+		{
+			this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
+		}
 	}
 };
 /**
@@ -3534,69 +3612,7 @@ EditorUi.prototype.download =  function(name)
 		}
 
 }
-/**
- * Saves the current graph under the given filename.
- */
-EditorUi.prototype.save = function(name)
-{
-	if (name != null)
-	{
-		if (this.editor.graph.isEditing())
-		{
-			this.editor.graph.stopEditing();
-		}
-		
-		var xml = mxUtils.getXml(this.editor.getGraphXml());
-		
 
-		try
-		{
-			if (Editor.useLocalStorage)
-			{
-				console.log('is using localstorage');
-				if (localStorage.getItem(name) != null &&
-					!mxUtils.confirm(mxResources.get('replaceIt', [name])))
-				{
-					return;
-				}
-
-				localStorage.setItem(name, xml);
-				this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('saved')) + ' ' + new Date());
-			}
-			else
-			{
-				console.log('not using localstorage');
-				if (xml.length < MAX_REQUEST_SIZE)
-				{
-					// new mxXmlRequest(SAVE_URL, '?filename=' + encodeURIComponent(name) +
-					// 	'&xml=' + encodeURIComponent(xml)).simulate(document, '_blank');
-					axios.post(`/save?filename=${name}`,
-								xml,
-								{
-									headers: {'Content-Type': 'application/xml'}
-								})
-								.then(res => console.log(res))
-								.catch(err => console.log(err));
-				}
-				else
-				{
-					mxUtils.alert(mxResources.get('drawingTooLarge'));
-					mxUtils.popup(xml);
-					
-					return;
-				}
-			}
-
-			this.editor.setModified(false);
-			this.editor.setFilename(name);
-			this.updateDocumentTitle();
-		}
-		catch (e)
-		{
-			this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
-		}
-	}
-};
 
 /**
  * Executes the given layout.
