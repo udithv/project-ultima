@@ -63,9 +63,11 @@ Actions.prototype.init = function()
 			window.openFile = null;
 		});
 	}).isEnabled = isGraphEnabled;
-	this.addAction('save', function() { ui.saveFile(false); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
-	this.addAction('downloadModelFiles', function() { ui.downloadModelFiles(false); }, null, null, Editor.ctrlKey + '+D+M').isEnabled = isGraphEnabled;		
-	this.addAction('saveAs...', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S').isEnabled = isGraphEnabled;
+	//this.addAction('save', function() { ui.saveFile(false); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
+	this.addAction('downloadModelFiles', function() { ui.downloadModelFiles(false); }, null, null, Editor.ctrlKey + '+D+M').isEnabled = isGraphEnabled;	
+	//download diagram and save have same shortcut so be careful
+	this.addAction('downloadDiagram', function() { ui.downloadDiagram(false); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;		
+	//this.addAction('saveAs...', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S').isEnabled = isGraphEnabled;
 	this.addAction('export...', function() { ui.showDialog(new ExportDialog(ui).container, 300, 230, true, true); });
 	this.addAction('editDiagram...', function()
 	{
@@ -1277,7 +1279,7 @@ Actions.prototype.addAction = function(key, funct, enabled, iconCls, shortcut)
 	}
 	else
 	{
-		title = (key == 'downloadModelFiles') ? 'Download Model Files' : mxResources.get(key);
+		title = mxResources.get(key);
 	}
 	
 	return this.put(key, new Action(title, funct, enabled, iconCls, shortcut));

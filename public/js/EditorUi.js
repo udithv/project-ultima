@@ -3536,13 +3536,13 @@ EditorUi.prototype.downloadModelFiles = function(forceDialog){
 
 	if (!forceDialog && this.editor.filename != null)
 	{
-		this.download(this.editor.getOrCreateFilename());
+		this.downloadSrcCode(this.editor.getOrCreateFilename());
 	}
 	else
 	{
 		var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), /*mxResources.get('save')*/ 'Download', mxUtils.bind(this, function(name)
 		{
-			this.download(name);
+			this.downloadSrcCode(name);
 		}), null, mxUtils.bind(this, function(name)
 		{
 			if (name != null && name.length > 0)
@@ -3561,10 +3561,42 @@ EditorUi.prototype.downloadModelFiles = function(forceDialog){
 };
 
 /**
- * Downloads the current graph under the given name
+ * Download the Diagram file as xml file
+ */
+EditorUi.prototype.downloadDiagram = function(forceDialog){
+	console.log('in download model files');
+
+	if (!forceDialog && this.editor.filename != null)
+	{
+		this.downloadGraphXmlFile(this.editor.getOrCreateFilename());
+	}
+	else
+	{
+		var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), /*mxResources.get('save')*/ 'Download', mxUtils.bind(this, function(name)
+		{
+			this.downloadGraphXmlFile(name);
+		}), null, mxUtils.bind(this, function(name)
+		{
+			if (name != null && name.length > 0)
+			{
+				return true;
+			}
+			
+			mxUtils.confirm(mxResources.get('invalidName'));
+			
+			return false;
+		}));
+		this.showDialog(dlg.container, 300, 100, true, true);
+		dlg.init();
+	}
+	
+};
+
+/**
+ * Downloads the xml file for current graph under the given name
  */
 
-EditorUi.prototype.download =  function(name) 
+EditorUi.prototype.downloadGraphXmlFile =  function(name) 
 {
 	if (name != null)
 		{
@@ -3578,8 +3610,50 @@ EditorUi.prototype.download =  function(name)
 
 			try
 			{
+					if (xml.length < MAX_REQUEST_SIZE)
+					{
+						download(xml, name.split('.')[0]+'.xml')
+						
+					}
+					else
+					{
+						mxUtils.alert(mxResources.get('drawingTooLarge'));
+						mxUtils.popup(xml);
+						
+						return;
+					}
 				
-					console.log('not using localstorage');
+
+				//this.editor.setModified(false);
+				this.editor.setFilename(name);
+				this.updateDocumentTitle();
+			}
+			catch (e)
+			{
+				this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
+			}
+		}
+
+}
+
+/**
+ * Downloads the model files for current graph under the given name
+ */
+
+EditorUi.prototype.downloadSrcCode =  function(name) 
+{
+	if (name != null)
+		{
+			if (this.editor.graph.isEditing())
+			{
+				this.editor.graph.stopEditing();
+			}
+			
+			var xml = mxUtils.getXml(this.editor.getGraphXml());
+			
+
+			try
+			{
 					if (xml.length < MAX_REQUEST_SIZE)
 					{
 						
