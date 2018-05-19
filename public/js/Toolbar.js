@@ -135,8 +135,9 @@ Toolbar.prototype.init = function()
 		}
 	}
 	
-	var elts = this.addItems(['-', 'code']);
-	elts[1].setAttribute('title', 'Download Model Files ' + ' (' + this.editorUi.actions.get('downloadModelFiles').shortcut + ')');
+	var elts = this.addItems(['-', 'code', 'bottom']);
+	elts[1].setAttribute('title', mxResources.get('downloadModelFiles') + ' (' + this.editorUi.actions.get('downloadModelFiles').shortcut + ')');
+	elts[2].setAttribute('title', mxResources.get('downloadDiagram')+ ' (' + this.editorUi.actions.get('downloadDiagram').shortcut + ')');
 	
 	if (sw >= 400)
 	{
@@ -712,8 +713,16 @@ Toolbar.prototype.addItems = function(keys, c, ignoreDisabled)
 			items.push(this.addSeparator(c));
 		}
 		else
-		{
-			items.push(this.addItem('geSprite-' + key.toLowerCase(), (key == 'code') ? 'downloadModelFiles' : key, c, ignoreDisabled));
+		{	
+			var actiontype = key;
+			if(key == 'code')
+			{
+				actiontype = 'downloadModelFiles';
+			}else if(key == 'bottom')
+			{
+				actiontype = 'downloadDiagram';
+			}
+			items.push(this.addItem('geSprite-' + key.toLowerCase(), actiontype, c, ignoreDisabled));
 		}
 	}
 	
