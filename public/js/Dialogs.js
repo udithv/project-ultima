@@ -404,24 +404,41 @@ var AboutDialog = function(editorUi)
 	var div = document.createElement('div');
 	div.setAttribute('align', 'center');
 	var h3 = document.createElement('h3');
-	mxUtils.write(h3, mxResources.get('about') + ' GraphEditor');
+	h3.setAttribute('class', 'banner');
+	mxUtils.write(h3, 'SchemaDock ');
+	var i = document.createElement('i');
+	i.setAttribute('class', 'fa fa-database');
+	i.setAttribute('aria-hidden', 'true');
+	h3.appendChild(i);
+	/*var i = document.createElement('i');
+	i.setAttribute('class', 'fa fa-database');
+	i.setAttribute('aria-hidden', 'true');
+	span.appendChild(i);*/
 	div.appendChild(h3);
-	var img = document.createElement('img');
-	img.style.border = '0px';
-	img.setAttribute('width', '176');
-	img.setAttribute('width', '151');
-	img.setAttribute('src', IMAGE_PATH + '/logo.png');
-	div.appendChild(img);
+	var p = document.createElement('p');
+	p.setAttribute('class', 'abouttext');
+	mxUtils.write(
+			p,
+			"Schema Dock is a source code generator for Mongoose-MongoDB-Node.js.It can be used to generate the model files."
+			+"It is simple. Draw the diagram. Click on </> or Download Model Files to generate model files."
+			+"You can also download the diagram in xml format for later use."
+		 );
+	div.appendChild(p)
+	
+	var email = document.createElement('p');
+	email.setAttribute('class', 'email');
+	mxUtils.write(email,'Email : schemadock@gmail.com');
+	div.appendChild(email);
+			
+	var creator = document.createElement('p');
+	creator.setAttribute('class', 'godname');
+	mxUtils.write(creator,'Created by Udith Victor')
+	div.appendChild(creator);		
+
+	
+	
 	mxUtils.br(div);
-	mxUtils.write(div, 'Powered by mxGraph ' + mxClient.VERSION);
-	mxUtils.br(div);
-	var link = document.createElement('a');
-	link.setAttribute('href', 'http://www.jgraph.com/');
-	link.setAttribute('target', '_blank');
-	mxUtils.write(link, 'www.jgraph.com');
-	div.appendChild(link);
-	mxUtils.br(div);
-	mxUtils.br(div);
+	
 	var closeBtn = mxUtils.button(mxResources.get('close'), function()
 	{
 		editorUi.hideDialog();

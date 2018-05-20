@@ -763,11 +763,11 @@ Actions.prototype.init = function()
 	
 	var showingAbout = false;
 	
-	this.put('about', new Action(mxResources.get('about') + ' Graph Editor...', function()
+	this.put('about', new Action(mxResources.get('about') + ' SchemaDock...', function()
 	{
 		if (!showingAbout)
 		{
-			ui.showDialog(new AboutDialog(ui).container, 320, 280, true, true, function()
+			ui.showDialog(new AboutDialog(ui).container, 800, 500, true, true, function()
 			{
 				showingAbout = false;
 			});
