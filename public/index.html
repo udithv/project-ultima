@@ -42,8 +42,8 @@
 			
 			EditorUi.prototype.init = function()
 			{
-				editorUiInit.apply(this, arguments);	
-			
+			   editorUiInit.apply(this, arguments);
+			   this.actions.get('about').funct();
 			};
 			
 			// Adds required resources (disables loading of fallback properties, this can only
