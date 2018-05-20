@@ -3501,13 +3501,13 @@ EditorUi.prototype.save = function(name)
 				{
 					// new mxXmlRequest(SAVE_URL, '?filename=' + encodeURIComponent(name) +
 					// 	'&xml=' + encodeURIComponent(xml)).simulate(document, '_blank');
-					axios.post(`/save?filename=${name}`,
+					axios.post('/save?filename='+name,
 								xml,
 								{
 									headers: {'Content-Type': 'application/xml'}
 								})
-								.then(res => console.log(res))
-								.catch(err => console.log(err));
+								.then(function(res){console.log(res)})
+								.catch(function(err){console.log(err)});
 				}
 				else
 				{
@@ -3657,14 +3657,14 @@ EditorUi.prototype.downloadSrcCode =  function(name)
 					if (xml.length < MAX_REQUEST_SIZE)
 					{
 						
-						axios.post(`/gendownload`,
+						axios.post('/gendownload',
 									xml,
 									{
 										headers: {'Content-Type': 'application/xml'},
 										responseType: 'blob'
 									})
-									.then(res => download(res.data, name.split('.')[0]+'.zip'))
-									.catch(err => console.log(err));
+									.then(function(res){download(res.data, name.split('.')[0]+'.zip');})
+									.catch(function(err){console.log(err)});
 					}
 					else
 					{
