@@ -139,6 +139,19 @@ Toolbar.prototype.init = function()
 	elts[1].setAttribute('title', mxResources.get('downloadModelFiles') + ' (' + this.editorUi.actions.get('downloadModelFiles').shortcut + ')');
 	elts[2].setAttribute('title', mxResources.get('downloadDiagram')+ ' (' + this.editorUi.actions.get('downloadDiagram').shortcut + ')');
 	
+
+
+	this.addSeparator();
+		
+	this.edgeRelationMenu = this.addMenuFunction('geSprite-startclassic', 'Entity Relationships', false, mxUtils.bind(this, function(menu)
+	{
+		this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], ['ERmany', 'ERmany',0, 0], 'geIcon geSprite geSprite-startermany geSprite-endermany', null, false).setAttribute('title', 'Many-To-Many');
+		this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], [mxConstants.NONE, 'ERmany',0, 0], 'geIcon geSprite geSprite-endermany', null, false).setAttribute('title', 'One-To-Many');			
+		this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], [mxConstants.NONE, mxConstants.NONE,0, 0], 'geIcon geSprite geSprite-horizontalrule', null, false).setAttribute('title', 'One-To-One');
+	}));
+	
+	this.addDropDownArrow(this.edgeRelationMenu, 'geSprite-startermany', 44, 50, 0, 0, 22, -4);
+	
 	if (sw >= 400)
 	{
 		this.addSeparator();
@@ -157,6 +170,8 @@ Toolbar.prototype.init = function()
 		}));
 		
 		this.addDropDownArrow(this.edgeStyleMenu, 'geSprite-orthogonal', 44, 50, 0, 0, 22, -4);
+		
+		
 	}
 
 
