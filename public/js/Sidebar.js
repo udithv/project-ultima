@@ -1163,7 +1163,6 @@ Sidebar.prototype.createEdgeItem = function(cells, title, showLabel, showTitle, 
 	
 	if (cells[0] != null && cells[0].edge)
 	{
-		// console.log(cells);
 		var ds = this.createDragSource(elt, this.createDropHandler(cells, false, allowCellsInserted,
 			bounds), this.createDragPreview(width, height), cells, bounds);
 		this.addEdgeClickHandler(elt, ds, cells, keys, val, reset);
@@ -2479,7 +2478,6 @@ Sidebar.prototype.addEdgeClickHandler = function(elt, ds, cells, keys, val, rese
 	
 	ds.mouseUp = mxUtils.bind(this, function(evt)
 	{
-		console.log("mouseup handler");
 		if (!mxEvent.isPopupTrigger(evt))
 		{
 			this.edgeClickHandler(keys, val, reset);
