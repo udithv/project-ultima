@@ -729,6 +729,7 @@ Menus.prototype.edgeStyleChange = function(menu, label, keys, values, sprite, pa
 		try
 		{
 			var cells = graph.getSelectionCells();
+			console.log(cells);
 			var edges = [];
 			
 			for (var i = 0; i < cells.length; i++)

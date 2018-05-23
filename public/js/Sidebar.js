@@ -962,9 +962,9 @@ Sidebar.prototype.addSchemaPalette = function(expand)
 			
 			return sb.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, 'Class 3');
 		}),
-		this.createEdgeTemplateEntry('endArrow=none;startArrow=none;html=1;', 50, 50, '', 'One To One Connector', null, lineTags + 'simple undirected plain blank no'),
-	 	this.createEdgeTemplateEntry('endArrow=ERmany;startArrow=none;html=1;', 50, 50, '', 'One To Many Connector', null, lineTags + 'directional directed'),
-		this.createEdgeTemplateEntry('endArrow=ERmany;startArrow=ERmany;html=1;', 50, 50, '', 'Many To Many Connector', null, lineTags + 'bidirectional')
+		this.createEdgeTemplateEntry('endArrow=none;startArrow=none;html=1;', 50, 50, '', 'One To One Connector', null, lineTags + 'simple undirected plain blank no', [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], ['ERmany', 'ERmany',0, 0], false),
+	 	this.createEdgeTemplateEntry('endArrow=ERmany;startArrow=none;html=1;', 50, 50, '', 'One To Many Connector', null, lineTags + 'directional directed', [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], [mxConstants.NONE, 'ERmany',0, 0], false),
+		this.createEdgeTemplateEntry('endArrow=ERmany;startArrow=ERmany;html=1;', 50, 50, '', 'Many To Many Connector', null, lineTags + 'bidirectional', [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], [mxConstants.NONE, mxConstants.NONE,0, 0], false)
 		
 	];
 
@@ -1110,9 +1110,11 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 	}
 	else if (cells[0] != null && cells[0].edge)
 	{
+		// console.log(cells);
 		var ds = this.createDragSource(elt, this.createDropHandler(cells, false, allowCellsInserted,
 			bounds), this.createDragPreview(width, height), cells, bounds);
 		this.addClickHandler(elt, ds, cells);
+		
 	}
 	
 	// Shows a tooltip with the rendered cell
@@ -1128,6 +1130,114 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 	}
 	
 	return elt;
+};
+
+/**
+ * Creates and returns a new palette Edge item for the given image.
+ */
+Sidebar.prototype.createEdgeItem = function(cells, title, showLabel, showTitle, width, height, allowCellsInserted, keys, val, reset)
+{
+	var elt = document.createElement('a');
+	elt.setAttribute('href', 'javascript:void(0);');
+	elt.className = 'geItem';
+	elt.style.overflow = 'hidden';
+	var border = (mxClient.IS_QUIRKS) ? 8 + 2 * this.thumbPadding : 2 * this.thumbBorder;
+	elt.style.width = (this.thumbWidth + border) + 'px';
+	elt.style.height = (this.thumbHeight + border) + 'px';
+	elt.style.padding = this.thumbPadding + 'px';
+	
+	if (mxClient.IS_IE6)
+	{
+		elt.style.border = 'none';
+	}
+	
+	// Blocks default click action
+	mxEvent.addListener(elt, 'click', function(evt)
+	{
+		mxEvent.consume(evt);
+	});
+
+	this.createThumb(cells, this.thumbWidth, this.thumbHeight, elt, title, showLabel, showTitle, width, height);
+	var bounds = new mxRectangle(0, 0, width, height);
+	
+	
+	if (cells[0] != null && cells[0].edge)
+	{
+		// console.log(cells);
+		var ds = this.createDragSource(elt, this.createDropHandler(cells, false, allowCellsInserted,
+			bounds), this.createDragPreview(width, height), cells, bounds);
+		this.addEdgeClickHandler(elt, ds, cells, keys, val, reset);
+		
+	}
+	
+	// Shows a tooltip with the rendered cell
+	if (!mxClient.IS_IOS)
+	{
+		mxEvent.addGestureListeners(elt, null, mxUtils.bind(this, function(evt)
+		{
+			if (mxEvent.isMouseEvent(evt))
+			{
+				this.showTooltip(elt, cells, bounds.width, bounds.height, title, showLabel);
+			}
+		}));
+	}
+	
+	return elt;
+};
+
+/**
+ * Creates a click handler for edges
+ */
+Sidebar.prototype.edgeClickHandler = function(keys, values, reset)
+{
+	console.log("edge click handler");
+	console.log(keys);
+	console.log(values);
+	var graph = this.editorUi.editor.graph;
+		graph.stopEditing(false);
+		
+		graph.getModel().beginUpdate();
+		try
+		{
+			var cells = graph.getSelectionCells();
+			var edges = [];
+			
+			for (var i = 0; i < cells.length; i++)
+			{
+				var cell = cells[i];
+				
+				if (graph.getModel().isEdge(cell))
+				{
+					if (reset)
+					{
+						var geo = graph.getCellGeometry(cell);
+			
+						// Resets all edge points
+						if (geo != null)
+						{
+							geo = geo.clone();
+							geo.points = null;
+							graph.getModel().setGeometry(cell, geo);
+						}
+					}
+					
+					for (var j = 0; j < keys.length; j++)
+					{
+						graph.setCellStyles(keys[j], values[j], [cell]);
+					}
+					
+					console.log(cell);
+					edges.push(cell);
+				}
+			}
+			
+			this.editorUi.fireEvent(new mxEventObject('styleChanged', 'keys', keys,
+				'values', values, 'cells', edges));
+		}
+		finally
+		{
+			graph.getModel().endUpdate();
+		}
 };
 
 /**
@@ -2325,7 +2435,7 @@ Sidebar.prototype.itemClicked = function(cells, ds, evt, elt)
  * Adds a handler for inserting the cell with a single click.
  */
 Sidebar.prototype.addClickHandler = function(elt, ds, cells)
-{
+{	
 	var graph = this.editorUi.editor.graph;
 	var oldMouseUp = ds.mouseUp;
 	var first = null;
@@ -2346,6 +2456,56 @@ Sidebar.prototype.addClickHandler = function(elt, ds, cells)
 			{
 				this.itemClicked(cells, ds, evt, elt);
 			}
+		}
+
+		oldMouseUp.apply(ds, arguments);
+		first = null;
+		
+		// Blocks tooltips on this element after single click
+		this.currentElt = elt;
+	});
+};
+
+/**
+ * Adds a handler for changing edge style with a single click.
+ */
+Sidebar.prototype.addEdgeClickHandler = function(elt, ds, cells, keys, val, reset)
+{	
+	var graph = this.editorUi.editor.graph;
+	var oldMouseUp = ds.mouseUp;
+	var first = null;
+	
+	mxEvent.addGestureListeners(elt, function(evt)
+	{
+		first = new mxPoint(mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+	});
+	
+	/* ds.mouseUp = mxUtils.bind(this, function(evt)
+	{
+		if (!mxEvent.isPopupTrigger(evt) && this.currentGraph == null && first != null)
+		{
+			var tol = graph.tolerance;
+			
+			if (Math.abs(first.x - mxEvent.getClientX(evt)) <= tol &&
+				Math.abs(first.y - mxEvent.getClientY(evt)) <= tol)
+			{
+				this.itemClicked(cells, ds, evt, elt);
+			}
+		}
+
+		oldMouseUp.apply(ds, arguments);
+		first = null;
+		
+		// Blocks tooltips on this element after single click
+		this.currentElt = elt;
+	}); */
+
+	ds.mouseUp = mxUtils.bind(this, function(evt)
+	{
+		console.log("mouseup handler");
+		if (!mxEvent.isPopupTrigger(evt))
+		{
+			this.edgeClickHandler(keys, val, reset);
 		}
 
 		oldMouseUp.apply(ds, arguments);
@@ -2409,20 +2569,20 @@ Sidebar.prototype.createVertexTemplateFromCells = function(cells, width, height,
 /**
  * 
  */
-Sidebar.prototype.createEdgeTemplateEntry = function(style, width, height, value, title, showLabel, tags, allowCellsInserted)
+Sidebar.prototype.createEdgeTemplateEntry = function(style, width, height, value, title, showLabel, tags, allowCellsInserted, keys, val, reset)
 {
 	tags = (tags != null && tags.length > 0) ? tags : title.toLowerCase();
 	
  	return this.addEntry(tags, mxUtils.bind(this, function()
  	{
- 		return this.createEdgeTemplate(style, width, height, value, title, showLabel, allowCellsInserted);
+ 		return this.createEdgeTemplate(style, width, height, value, title, showLabel, allowCellsInserted, keys, val, reset);
  	}));
 };
 
 /**
  * Creates a drop handler for inserting the given cells.
  */
-Sidebar.prototype.createEdgeTemplate = function(style, width, height, value, title, showLabel, allowCellsInserted)
+Sidebar.prototype.createEdgeTemplate = function(style, width, height, value, title, showLabel, allowCellsInserted, keys, val, reset)
 {
 	var cell = new mxCell((value != null) ? value : '', new mxGeometry(0, 0, width, height), style);
 	cell.geometry.setTerminalPoint(new mxPoint(0, height), true);
@@ -2430,15 +2590,15 @@ Sidebar.prototype.createEdgeTemplate = function(style, width, height, value, tit
 	cell.geometry.relative = true;
 	cell.edge = true;
 	
-	return this.createEdgeTemplateFromCells([cell], width, height, title, showLabel, allowCellsInserted);
+	return this.createEdgeTemplateFromCells([cell], width, height, title, showLabel, allowCellsInserted, keys, val, reset);
 };
 
 /**
  * Creates a drop handler for inserting the given cells.
  */
-Sidebar.prototype.createEdgeTemplateFromCells = function(cells, width, height, title, showLabel, allowCellsInserted)
+Sidebar.prototype.createEdgeTemplateFromCells = function(cells, width, height, title, showLabel, allowCellsInserted, keys, val, reset)
 {	
-	return this.createItem(cells, title, showLabel, true, width, height, allowCellsInserted);
+	return this.createEdgeItem(cells, title, showLabel, true, width, height, allowCellsInserted,  keys, val, reset);
 };
 
 /**
