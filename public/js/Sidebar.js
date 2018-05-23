@@ -962,9 +962,9 @@ Sidebar.prototype.addSchemaPalette = function(expand)
 			
 			return sb.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, 'Class 3');
 		}),
-		this.createEdgeTemplateEntry('endArrow=none;startArrow=none;html=1;', 50, 50, '', 'One To One Connector', null, lineTags + 'simple undirected plain blank no', [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], ['ERmany', 'ERmany',0, 0], false),
-	 	this.createEdgeTemplateEntry('endArrow=ERmany;startArrow=none;html=1;', 50, 50, '', 'One To Many Connector', null, lineTags + 'directional directed', [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], [mxConstants.NONE, 'ERmany',0, 0], false),
-		this.createEdgeTemplateEntry('endArrow=ERmany;startArrow=ERmany;html=1;', 50, 50, '', 'Many To Many Connector', null, lineTags + 'bidirectional', [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], [mxConstants.NONE, mxConstants.NONE,0, 0], false)
+		this.createEdgeTemplateEntry('endArrow=none;startArrow=none;html=1;', 50, 50, '', 'One To One Connector', null, lineTags + 'simple undirected plain blank no', null, [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], [mxConstants.NONE, mxConstants.NONE,0, 0], false),
+	 	this.createEdgeTemplateEntry('endArrow=ERmany;startArrow=none;html=1;', 50, 50, '', 'One To Many Connector', null, lineTags + 'directional directed',null, [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], [mxConstants.NONE, 'ERmany',0, 0], false),
+		this.createEdgeTemplateEntry('endArrow=ERmany;startArrow=ERmany;html=1;', 50, 50, '', 'Many To Many Connector', null, lineTags + 'bidirectional', null, [mxConstants.STYLE_STARTARROW, mxConstants.STYLE_ENDARROW, 'startFill', 'endFill'], ['ERmany', 'ERmany',0, 0], false)
 		
 	];
 
@@ -1190,9 +1190,7 @@ Sidebar.prototype.createEdgeItem = function(cells, title, showLabel, showTitle, 
  */
 Sidebar.prototype.edgeClickHandler = function(keys, values, reset)
 {
-	console.log("edge click handler");
-	console.log(keys);
-	console.log(values);
+	
 	var graph = this.editorUi.editor.graph;
 		graph.stopEditing(false);
 		
@@ -1226,7 +1224,6 @@ Sidebar.prototype.edgeClickHandler = function(keys, values, reset)
 						graph.setCellStyles(keys[j], values[j], [cell]);
 					}
 					
-					console.log(cell);
 					edges.push(cell);
 				}
 			}
@@ -2480,26 +2477,6 @@ Sidebar.prototype.addEdgeClickHandler = function(elt, ds, cells, keys, val, rese
 		first = new mxPoint(mxEvent.getClientX(evt), mxEvent.getClientY(evt));
 	});
 	
-	/* ds.mouseUp = mxUtils.bind(this, function(evt)
-	{
-		if (!mxEvent.isPopupTrigger(evt) && this.currentGraph == null && first != null)
-		{
-			var tol = graph.tolerance;
-			
-			if (Math.abs(first.x - mxEvent.getClientX(evt)) <= tol &&
-				Math.abs(first.y - mxEvent.getClientY(evt)) <= tol)
-			{
-				this.itemClicked(cells, ds, evt, elt);
-			}
-		}
-
-		oldMouseUp.apply(ds, arguments);
-		first = null;
-		
-		// Blocks tooltips on this element after single click
-		this.currentElt = elt;
-	}); */
-
 	ds.mouseUp = mxUtils.bind(this, function(evt)
 	{
 		console.log("mouseup handler");
