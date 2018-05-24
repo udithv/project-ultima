@@ -1108,14 +1108,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 			return this.editorUi.editor.graph.graphHandler.guidesEnabled;
 		});
 	}
-	else if (cells[0] != null && cells[0].edge)
-	{
-		// console.log(cells);
-		var ds = this.createDragSource(elt, this.createDropHandler(cells, false, allowCellsInserted,
-			bounds), this.createDragPreview(width, height), cells, bounds);
-		this.addClickHandler(elt, ds, cells);
-		
-	}
+	
 	
 	// Shows a tooltip with the rendered cell
 	if (!mxClient.IS_IOS)
