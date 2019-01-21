@@ -10,7 +10,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const zipFolder = require('zip-folder');
+const zipFolder = require('bestzip');
 const convert = require('xml-js');
 const Dock = require('./Dock');
 const ModelsGenerator = require('./modelsgenerator');
@@ -51,15 +51,13 @@ app.post('/download', (req, res) => {
 
     DockObj.genModelFiles(models)
             .then(() => {
-                zipFolder(modelDir, zip, (err) => {
-                    if(err) {
-                        console.log('oh no! Error compressing', err);
-                        res.status(304).send("ERROR");
-                    } else {
-                        console.log('EXCELLENT');
-                        res.download(zip, 'Diagram1.zip')
-                    }
-                });
+                return zipFolder({
+                    source: modelDir,
+                    destination: zip
+                  });
+            })
+            .then(function() {
+                console.log('all done!');
             })
             .catch(err => {
                 console.log(err);
